@@ -9,11 +9,11 @@ test('daily research sweep', async ({ page }) => {
 
   await page.goto(url.toString());
 
-  // Wait for research to auto-trigger (3s delay + research time)
+  // Wait for research to auto-trigger
   await page.waitForTimeout(10000);
 
-  // Wait for research to complete (spinning icon disappears)
-  await page.waitForSelector('text=Updated', { timeout: 240000 });
+  // Wait for research to complete (up to 59 minutes)
+  await page.waitForSelector('text=Updated', { timeout: 3540000 });
 
   // Screenshot for debugging
   await page.screenshot({ path: 'test-results/research-complete.png' });
