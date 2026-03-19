@@ -2,8 +2,8 @@ name: Daily Research Sweep
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # Runs daily at noon UTC
-  workflow_dispatch:  # Allows manual trigger
+    - cron: '0 12 * * *'
+  workflow_dispatch:
 
 jobs:
   research:
@@ -11,7 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Playwright
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
         run: npx playwright install chromium
 
       - name: Run headless research
@@ -20,8 +23,7 @@ jobs:
           SLACK_HOOK: ${{ secrets.SLACK_HOOK }}
           BIN_ID: ${{ secrets.BIN_ID }}
           BIN_KEY: ${{ secrets.BIN_KEY }}
-        run: |
-          npx playwright test --config=playwright-headless.config.ts
+        run: npx playwright test --config=playwright-headless.config.ts
 
       - name: Upload screenshot on failure
         if: failure()
