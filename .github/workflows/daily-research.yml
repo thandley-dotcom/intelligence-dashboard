@@ -1,0 +1,31 @@
+name: Daily Research Sweep
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Runs daily at noon UTC
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+
+      - name: Run headless research
+        env:
+          EMAIL_HOOK: ${{ secrets.EMAIL_HOOK }}
+          SLACK_HOOK: ${{ secrets.SLACK_HOOK }}
+          BIN_ID: ${{ secrets.BIN_ID }}
+          BIN_KEY: ${{ secrets.BIN_KEY }}
+        run: |
+          npx playwright test --config=playwright-headless.config.ts
+
+      - name: Upload screenshot on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshot
+          path: test-results/
