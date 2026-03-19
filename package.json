@@ -1,0 +1,7 @@
+{
+  "name": "intelligence-dashboard-headless",
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}
