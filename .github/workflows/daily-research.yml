@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 12 * * *'
   workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Bypass 24h skip check and force research'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   research:
@@ -23,6 +29,7 @@ jobs:
           SLACK_HOOK: ${{ secrets.SLACK_HOOK }}
           BIN_ID: ${{ secrets.BIN_ID }}
           BIN_KEY: ${{ secrets.BIN_KEY }}
+          FORCE_RUN: ${{ github.event.inputs.force_run }}
         run: npx playwright test --config=playwright-headless.config.ts
 
       - name: Upload screenshot on failure
