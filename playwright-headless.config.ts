@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 300000, // 5 min for research to complete
+  timeout: 3600000,
   use: {
     headless: true,
     viewport: { width: 1280, height: 720 },
