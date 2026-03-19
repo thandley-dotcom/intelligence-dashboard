@@ -40,14 +40,19 @@ test('daily research sweep', async ({ page }) => {
     if (process.env.SLACK_HOOK) url.searchParams.set('slackHook', process.env.SLACK_HOOK);
     url.searchParams.set('binId', binId);
     url.searchParams.set('binKey', binKey);
+    if (forceRun) url.searchParams.set('forceResearch', 'true');
 
     await page.goto(url.toString());
 
-    // Wait for research to auto-trigger
-    await page.waitForTimeout(10000);
+    // Wait for research to actually start (the "Researching X/Y" text)
+    console.log('Waiting for research to start…');
+    await page.waitForSelector('text=/Researching \\d+/i', { timeout: 60000 });
+    console.log('Research started.');
 
-    // Wait for research to complete (up to 59 minutes)
-    await page.waitForSelector('text=Updated', { timeout: 3540000 });
+    // Now wait for research to complete (up to 59 minutes)
+    // "Updated" appears only after isResearching flips to false
+    await page.waitForSelector('text=/Updated/i', { timeout: 3540000 });
+    console.log('Research complete.');
 
     // Screenshot for debugging
     await page.screenshot({ path: 'test-results/research-complete.png' });
