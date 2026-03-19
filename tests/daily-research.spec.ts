@@ -4,11 +4,12 @@ const JSONBIN_BASE = "https://api.jsonbin.io/v3/b";
 const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 test('daily research sweep', async ({ page }) => {
-    // ── 24h skip check ──────────────────────────────────────
     const binId = process.env.BIN_ID || '';
     const binKey = process.env.BIN_KEY || '';
+    const forceRun = process.env.FORCE_RUN === 'true';
 
-    if (binId && binKey) {
+    // ── 24h skip check (bypassed with FORCE_RUN=true) ──────
+    if (!forceRun && binId && binKey) {
         try {
             const res = await fetch(`${JSONBIN_BASE}/${binId}/latest`, {
                 headers: { "X-Master-Key": binKey },
@@ -29,6 +30,8 @@ test('daily research sweep', async ({ page }) => {
         } catch (e) {
             console.warn('jsonbin check failed, proceeding with research:', e);
         }
+    } else if (forceRun) {
+        console.log('🔧 FORCE_RUN=true — bypassing skip check.');
     }
     // ── End skip check ──────────────────────────────────────
 
